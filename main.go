@@ -17,8 +17,11 @@ func init() {
 func main() {
 	http.HandleFunc("/", root)
 	http.HandleFunc("/startMonitoring", startMonitor)
-	http.ListenAndServe(":8080", nil)
-
+	http.HandleFunc("/stopMonitoring", stopMonitor)
+	err := http.ListenAndServe(":8081", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func root(w http.ResponseWriter, r *http.Request) {
@@ -34,4 +37,14 @@ func startMonitor(w http.ResponseWriter, r *http.Request) {
 	go MONITOR.StartMonitoring(ip)
 
 	io.WriteString(w, "Monitoring Started...")
+}
+func stopMonitor(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		log.Fatal(err)
+	}
+	ip := r.FormValue("serverIp")
+	go MONITOR.StopMonitoring(ip)
+
+	io.WriteString(w, "Monitoring Stop...")
 }

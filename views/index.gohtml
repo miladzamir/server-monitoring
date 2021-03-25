@@ -24,6 +24,17 @@
     </div>
 
     <div class="col-12">
+        <form action="/stopMonitoring" method="GET">
+            <div class="form-group">
+                <label for="serverIp">Server Ip</label>
+                <input type="text" name="serverIp" class="form-control" id="serverIp" placeholder="For Example: 192.168.1.1">
+            </div>
+
+            <button type="submit" class="btn btn-primary">STOP Monitoring...</button>
+        </form>
+    </div>
+
+    <div class="col-12">
         <table class="table">
             <thead>
             <tr>
