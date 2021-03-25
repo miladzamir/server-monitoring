@@ -13,8 +13,7 @@
 <body>
 <div class="container-fluid">
     <div class="col-12">
-        <form>
-
+        <form action="/startMonitoring" method="GET">
             <div class="form-group">
                 <label for="serverIp">Server Ip</label>
                 <input type="text" name="serverIp" class="form-control" id="serverIp" placeholder="For Example: 192.168.1.1">
@@ -29,16 +28,12 @@
             <thead>
             <tr>
                 <th scope="col">#</th>
-{{/*                <th scope="col">remote_addr</th>*/}}
-{{/*                <th scope="col">local_addr</th>*/}}
-{{/*                <th scope="col">ping_at</th>*/}}
-{{/*                <th scope="col">live</th>*/}}
             </tr>
             </thead>
             <tbody>
             {{range $index, $element := .}}
             <tr>
-                    <td>{{$element}}</td>
+                <td>{{$element}}</td>
             </tr>
             {{ end }}
             </tbody>

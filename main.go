@@ -2,7 +2,9 @@ package main
 
 import (
 	DB "./database"
+	MONITOR "./monitor"
 	"html/template"
+	"io"
 	"log"
 	"net/http"
 )
@@ -28,6 +30,8 @@ func startMonitor(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	ip := r.FormValue("serverIp")
+	go MONITOR.StartMonitoring(ip)
 
-	tpl.ExecuteTemplate(w, "page.gohtml", r.Form)
+	io.WriteString(w, "Monitoring Started...")
 }
