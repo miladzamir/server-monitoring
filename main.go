@@ -2,40 +2,32 @@ package main
 
 import (
 	DB "./database"
-	"fmt"
+	"html/template"
 	"log"
-	"net"
-	"time"
+	"net/http"
 )
 
-const (
-	SERVER_Addr = "5.90.90.25"
-)
+var tpl *template.Template
 
-func main() {
-	for {
-		conn, err := connectToServer()
-		if err != nil {
-			log.Fatal(err)
-		}
-		DB.Insert("INSERT INTO log (remote_addr, local_addr, ping_at)VALUES ('" + conn.RemoteAddr().String() + "', '" + conn.LocalAddr().String() + "', '" + time.Now().Format("2006-01-02 15:04:05") + "')")
-		fmt.Println(time.Now(), "Ok", conn.RemoteAddr(), conn.LocalAddr())
-		time.Sleep(time.Second)
-
-		defer conn.Close()
-	}
+func init() {
+	tpl = template.Must(template.ParseFiles("./views/index.gohtml"))
 }
-func connectToServer() (net.Conn, error) {
-	for {
-		add := "192.168.1.65:8125"
-		conn, err := net.DialTimeout("tcp", add, time.Second*2)
-		if err != nil {
-			fmt.Println("Connecting...")
-			DB.Insert("INSERT INTO log (remote_addr, local_addr, ping_at, live)VALUES ('" + add + "', '" + SERVER_Addr + "', '" + time.Now().Format("2006-01-02 15:04:05") + "', 0)")
-			time.Sleep(time.Second)
-			continue
-		} else {
-			return conn, err
-		}
+func main() {
+	http.HandleFunc("/", root)
+	http.HandleFunc("/startMonitoring", startMonitor)
+	http.ListenAndServe(":8080", nil)
+
+}
+
+func root(w http.ResponseWriter, r *http.Request) {
+	data := DB.Select("SELECT * FROM log")
+	tpl.ExecuteTemplate(w, "index.gohtml", data)
+}
+func startMonitor(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		log.Fatal(err)
 	}
+
+	tpl.ExecuteTemplate(w, "page.gohtml", r.Form)
 }
