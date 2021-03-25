@@ -5,17 +5,20 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func Demo() {
+var db *sql.DB
+var err error
 
-	db, err := sql.Open("mysql", "root:@/server")
+func init() {
+	db, err = sql.Open("mysql", "root:@/server")
+}
 
+func Insert(query string) {
 	if err != nil {
 		panic(err.Error())
 	}
-	defer db.Close()
+	//defer db.Close()
 
-	insert, err := db.Query("INSERT INTO log (name)VALUES ('zamir')")
-
+	insert, err := db.Query(query)
 	if err != nil {
 		panic(err.Error())
 	}
