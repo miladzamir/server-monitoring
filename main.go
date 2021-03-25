@@ -1,7 +1,7 @@
 package main
 
 import (
-	"context"
+	DB "./database"
 	"fmt"
 	"log"
 	"net"
@@ -9,42 +9,33 @@ import (
 )
 
 const (
-	HOST = "88.99.104.53"
-	PORT = "80"
+	SERVER_Addr = "5.90.90.25"
 )
 
 func main() {
-	i := check()
-
 	for {
-		func() {
-			var d net.Dialer
-			ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-			defer cancel()
+		conn, err := connectToServer()
+		if err != nil {
+			log.Fatal(err)
+		}
+		DB.Insert("INSERT INTO log (remote_addr, local_addr, ping_at)VALUES ('" + conn.RemoteAddr().String() + "', '" + conn.LocalAddr().String() + "', '" + time.Now().Format("2006-01-02 15:04:05") + "')")
+		fmt.Println(time.Now(), "Ok", conn.RemoteAddr(), conn.LocalAddr())
+		time.Sleep(time.Second)
 
-			conn, err := d.DialContext(ctx, "tcp", HOST+":"+PORT)
-			if err != nil {
-				log.Fatalf("Failed to dial: %v", err)
-			}
-			connected(conn, i)
-		}()
+		defer conn.Close()
 	}
 }
-func check() int {
-	var i int
-	fmt.Println("Time between each check per second: ")
-	_, err := fmt.Scanf("%d", &i)
-	if err != nil {
-		log.Fatalf("%v", err)
+func connectToServer() (net.Conn, error) {
+	for {
+		add := "192.168.1.65:8125"
+		conn, err := net.DialTimeout("tcp", add, time.Second*2)
+		if err != nil {
+			fmt.Println("Connecting...")
+			DB.Insert("INSERT INTO log (remote_addr, local_addr, ping_at, live)VALUES ('" + add + "', '" + SERVER_Addr + "', '" + time.Now().Format("2006-01-02 15:04:05") + "', 0)")
+			time.Sleep(time.Second)
+			continue
+		} else {
+			return conn, err
+		}
 	}
-	return i
-}
-
-func connected(conn net.Conn, i int) {
-
-	fmt.Println(conn.LocalAddr())
-	fmt.Println(time.Now().Format(time.ANSIC), "Alive...", HOST+":"+PORT)
-
-	time.Sleep(time.Second * time.Duration(i))
-	defer conn.Close()
 }
