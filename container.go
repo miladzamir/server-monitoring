@@ -1,7 +1,6 @@
-package monitor
+package main
 
 import (
-	DB "../database"
 	"fmt"
 	"log"
 	"net"
@@ -27,7 +26,7 @@ func StartMonitoring(ip string) {
 			}
 			fmt.Println("Connecting...")
 
-			DB.Insert("INSERT INTO log (remote_addr, local_addr, ping_at, live)VALUES ('" + ip + "', '" + SERVER_Addr + "', '" + time.Now().Format("2006-01-02 15:04:05") + "', 0)")
+			Insert("INSERT INTO log (remote_addr, local_addr, ping_at, live)VALUES ('" + ip + "', '" + SERVER_Addr + "', '" + time.Now().Format("2006-01-02 15:04:05") + "', 0)")
 			time.Sleep(time.Second)
 			continue
 		}
@@ -43,7 +42,7 @@ func StartMonitoring(ip string) {
 			}
 		}
 		wg.Wait()
-		DB.Insert("INSERT INTO log (remote_addr, local_addr, ping_at)VALUES ('" + conn.RemoteAddr().String() + "', '" + conn.LocalAddr().String() + "', '" + time.Now().Format("2006-01-02 15:04:05") + "')")
+		Insert("INSERT INTO log (remote_addr, local_addr, ping_at)VALUES ('" + conn.RemoteAddr().String() + "', '" + conn.LocalAddr().String() + "', '" + time.Now().Format("2006-01-02 15:04:05") + "')")
 		fmt.Println(time.Now(), "Ok", conn.RemoteAddr(), conn.LocalAddr())
 		time.Sleep(time.Second)
 

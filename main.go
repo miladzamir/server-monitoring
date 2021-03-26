@@ -1,8 +1,6 @@
 package main
 
 import (
-	DB "./database"
-	MONITOR "./monitor"
 	"html/template"
 	"io"
 	"log"
@@ -25,7 +23,7 @@ func main() {
 }
 
 func root(w http.ResponseWriter, r *http.Request) {
-	data := DB.Select("SELECT * FROM log")
+	data := Select("SELECT * FROM log")
 	tpl.ExecuteTemplate(w, "index.gohtml", data)
 }
 func startMonitor(w http.ResponseWriter, r *http.Request) {
@@ -34,7 +32,7 @@ func startMonitor(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 	ip := r.FormValue("serverIp")
-	go MONITOR.StartMonitoring(ip)
+	go StartMonitoring(ip)
 
 	io.WriteString(w, "Monitoring Started...")
 }
@@ -44,7 +42,7 @@ func stopMonitor(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 	ip := r.FormValue("serverIp")
-	go MONITOR.StopMonitoring(ip)
+	go StopMonitoring(ip)
 
 	io.WriteString(w, "Monitoring Stop...")
 }
