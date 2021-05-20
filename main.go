@@ -24,7 +24,10 @@ func main() {
 
 func root(w http.ResponseWriter, r *http.Request) {
 	data := selectQ("SELECT * FROM log")
-	tpl.ExecuteTemplate(w, "index.gohtml", data)
+	err := tpl.ExecuteTemplate(w, "index.gohtml", data)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 func startMonitor(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
@@ -34,7 +37,10 @@ func startMonitor(w http.ResponseWriter, r *http.Request) {
 	ip := r.FormValue("serverIp")
 	go startMonitoring(ip)
 
-	io.WriteString(w, "Monitoring Started...")
+	_, err = io.WriteString(w, "Monitoring Started...")
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 func stopMonitor(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
@@ -44,5 +50,8 @@ func stopMonitor(w http.ResponseWriter, r *http.Request) {
 	ip := r.FormValue("serverIp")
 	go stopMonitoring(ip)
 
-	io.WriteString(w, "Monitoring Stop...")
+	_, err = io.WriteString(w, "Monitoring Stop...")
+	if err != nil {
+		log.Fatal(err)
+	}
 }
