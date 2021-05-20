@@ -15,7 +15,7 @@ const (
 var wg sync.WaitGroup
 var remoteAddr = ""
 
-func StartMonitoring(ip string) {
+func startMonitoring(ip string) {
 	for {
 		conn, err := net.DialTimeout("tcp", ip, time.Second*2)
 		if err != nil {
@@ -26,7 +26,7 @@ func StartMonitoring(ip string) {
 			}
 			fmt.Println("Connecting...")
 
-			Insert("INSERT INTO log (remote_addr, local_addr, ping_at, live)VALUES ('" + ip + "', '" + SERVER_Addr + "', '" + time.Now().Format("2006-01-02 15:04:05") + "', 0)")
+			insert("INSERT INTO log (remote_addr, local_addr, ping_at, live)VALUES ('" + ip + "', '" + SERVER_Addr + "', '" + time.Now().Format("2006-01-02 15:04:05") + "', 0)")
 			time.Sleep(time.Second)
 			continue
 		}
@@ -42,7 +42,7 @@ func StartMonitoring(ip string) {
 			}
 		}
 		wg.Wait()
-		Insert("INSERT INTO log (remote_addr, local_addr, ping_at)VALUES ('" + conn.RemoteAddr().String() + "', '" + conn.LocalAddr().String() + "', '" + time.Now().Format("2006-01-02 15:04:05") + "')")
+		insert("INSERT INTO log (remote_addr, local_addr, ping_at)VALUES ('" + conn.RemoteAddr().String() + "', '" + conn.LocalAddr().String() + "', '" + time.Now().Format("2006-01-02 15:04:05") + "')")
 		fmt.Println(time.Now(), "Ok", conn.RemoteAddr(), conn.LocalAddr())
 		time.Sleep(time.Second)
 
@@ -50,7 +50,7 @@ func StartMonitoring(ip string) {
 	}
 }
 
-func StopMonitoring(ip string) {
+func stopMonitoring(ip string) {
 	wg.Add(1)
 	remoteAddr = ip
 	wg.Done()

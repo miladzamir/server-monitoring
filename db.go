@@ -23,7 +23,7 @@ func init() {
 	}
 }
 
-func Insert(query string) {
+func insert(query string) {
 	//defer db.Close()
 
 	insert, err := db.Query(query)
@@ -32,7 +32,7 @@ func Insert(query string) {
 	}
 	defer insert.Close()
 }
-func Select(query string) []Log {
+func selectQ(query string) []Log {
 	rows, err := db.Query(query)
 	if err != nil {
 		panic(err.Error())
